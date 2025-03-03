@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProBgRemover - AI Background Removal</title>
+    <!-- Google Ads -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_GOOGLE_ID"
+     crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary: #2a2a2a;
+            --secondary: #ff6b6b;
+            --accent: #4ecdc4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upload-zone {
+            border: 4px dashed var(--accent);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            text-align: center;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .upload-zone.active {
+            border-color: var(--secondary);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .price-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .ads-banner {
+            margin: 2rem auto;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--secondary), var(--accent));
+            border: none;
+            padding: 1rem 2rem;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .result-section {
+            display: none;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Ads Header -->
+    <div class="ads-banner">
+        <!-- Replace with your ad code -->
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-YOUR_GOOGLE_ID" data-ad-slot="1234567890"></ins>
+    </div>
+
+    <header class="header">
+        <h1>ProBgRemover</h1>
+        <nav>
+            <button>Home</button>
+            <button>Pricing</button>
+            <button>Account</button>
+        </nav>
+    </header>
+
+    <main>
+        <div class="upload-zone" id="dropZone">
+            <h2>Drag & Drop Image Here</h2>
+            <p>or click to upload</p>
+            <input type="file" id="fileInput" hidden accept="image/*">
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="image-comparison">
+                <img id="originalImage" src="#" alt="Original">
+                <img id="processedImage" src="#" alt="Processed">
+            </div>
+            <button id="downloadBtn">Download ($10)</button>
+            <button id="premiumBtn">HD Version ($40)</button>
+        </div>
+
+        <div class="pricing-cards">
+            <div class="price-card">
+                <h3>Basic - $10</h3>
+                <p>Standard Quality</p>
+                <p>Single Image</p>
+                <button>Choose Plan</button>
+            </div>
+            <div class="price-card">
+                <h3>Pro - $40</h3>
+                <p>HD Quality</p>
+                <p>Priority Processing</p>
+                <button>Choose Plan</button>
+            </div>
+            <div class="price-card">
+                <h3>Premium - $60</h3>
+                <p>Bulk Processing</p>
+                <p>Cloud Storage</p>
+                <button>Choose Plan</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Ads -->
+    <div class="ads-banner">
+        <!-- Replace with your ad code -->
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-YOUR_GOOGLE_ID" data-ad-slot="0987654321"></ins>
+    </div>
+
+    <script>
+        const API_KEY = 'RSa2YHu3weMBeQFLeuDzGFJP';
+        let currentFile = null;
+
+        // Drag & Drop Handling
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+
+        async function handleFile(file) {
+            const formData = new FormData();
+            formData.append('image_file', file);
+            
+            try {
+                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': API_KEY
+                    },
+                    body: formData
+                });
+                
+                const result = await response.blob();
+                const url = URL.createObjectURL(result);
+                document.getElementById('processedImage').src = url;
+                document.getElementById('resultSection').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Processing failed. Please try again.');
+            }
+        }
+
+        // Initialize Google Ads
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+    <!-- Payment Integration -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('YOUR_STRIPE_KEY');
+        
+        document.querySelectorAll('.price-card button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Handle payment integration here
+            });
+        });
+    </script>
+</body>
+</html>
